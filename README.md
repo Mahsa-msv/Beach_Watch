@@ -1,5 +1,7 @@
 # Beach Watch
 
+**Live app: https://beach-watch-plum.vercel.app/**
+
 Is the beach open? A responsive web app that shows the status of Halifax (HRM)
 supervised beaches, so a parent or dog owner can check before they drive.
 
