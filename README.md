@@ -68,7 +68,6 @@ Edit a value, save, and the dev server hot reloads.
 ## Data status
 
 The beach names, locations, lifeguard supervision, and water type reflect the real
-19 supervised HRM beaches. The open / closed / at risk statuses in this version are
-sample values used to build and style the app. Wiring the live daily data from the
-City of Halifax page is a separate step (a server side fetch with 24 hour
+19 supervised HRM beaches. Wiring the live daily data from the
+City of Halifax page is an implemented step (a server side fetch with 24 hour
 revalidation and an API route).
