@@ -119,44 +119,12 @@ function NotificationBell({ beaches }: { beaches: Beach[] }) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [sending, setSending] = useState(false);
-  const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(
-    null
-  );
+  const [notice, setNotice] = useState<string | null>(null);
 
-  // Demo-only: fire a real SMS/email now via /api/notify, without waiting for a
-  // real status change. Sends on the active channel to the entered contact (or
-  // the server's DEMO_ fallback if left blank).
-  async function sendTestAlert() {
-    setSending(true);
-    setNotice(null);
-    try {
-      const payload: {
-        mode: "test";
-        phone?: string;
-        email?: string;
-        beachId?: string;
-      } = { mode: "test" };
-      if (channel === "phone") payload.phone = phone;
-      else payload.email = email;
-      if (selectedIds[0]) payload.beachId = selectedIds[0];
-
-      const res = await fetch("/api/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setNotice({ ok: true, text: `Sent: ${data.message}` });
-      } else {
-        setNotice({ ok: false, text: data.error || "Could not send the alert." });
-      }
-    } catch {
-      setNotice({ ok: false, text: "Network error while sending the alert." });
-    } finally {
-      setSending(false);
-    }
+  // Sign-up confirmation. Alert delivery is pending provider approval, so we
+  // acknowledge the request rather than sending anything yet.
+  function notifyMe() {
+    setNotice("You are on the list. Alerts are pending approval and will start once it is active.");
   }
 
   return (
@@ -240,38 +208,25 @@ function NotificationBell({ beaches }: { beaches: Beach[] }) {
             />
           </div>
 
-          <button className="mt-3 w-full rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white">
-            Notify me
-          </button>
-
-          {/* Demo-only live trigger */}
           <button
-            onClick={sendTestAlert}
-            disabled={sending}
-            className="mt-2 w-full rounded-xl border border-primary px-3 py-2 text-sm font-semibold text-primary transition hover:bg-primary-soft disabled:opacity-60"
+            onClick={notifyMe}
+            className="mt-3 w-full rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white"
           >
-            {sending ? "Sending" : "Send test alert (demo)"}
+            Notify me
           </button>
 
           {notice && (
             <p
               className="mt-2 rounded-lg px-3 py-2 text-xs"
               style={{
-                background: notice.ok
-                  ? "rgba(47, 174, 102, 0.14)"
-                  : "rgba(224, 72, 61, 0.14)",
-                color: notice.ok ? "var(--status-open)" : "var(--status-closed)",
+                background: "rgba(47, 174, 102, 0.14)",
+                color: "var(--status-open)",
               }}
               role="status"
             >
-              {notice.text}
+              {notice}
             </p>
           )}
-
-          <p className="mt-2 text-[11px] text-ink-soft">
-            Sign-up storage is not wired yet. The test button sends a real
-            message now for the demo.
-          </p>
         </div>
       )}
     </div>
