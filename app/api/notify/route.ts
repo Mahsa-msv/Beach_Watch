@@ -12,6 +12,17 @@ function isAlertable(beach: Beach): boolean {
   return beach.status === "closed" || beach.status === "risk";
 }
 
+// Twilio requires E.164 (e.g. +19025550134). Be forgiving about what the user
+// types: strip spaces/dashes/parentheses and add +1 for a 10-digit NANP number.
+function normalizePhone(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("+")) return "+" + trimmed.slice(1).replace(/\D/g, "");
+  const digits = trimmed.replace(/\D/g, "");
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  return trimmed;
+}
+
 /**
  * POST /api/notify
  * Body (all optional):
@@ -35,7 +46,8 @@ export async function POST(request: NextRequest) {
     // no body is fine; demo defaults are used
   }
 
-  const phone = (body.phone || process.env.DEMO_PHONE || "").trim();
+  const rawPhone = (body.phone || process.env.DEMO_PHONE || "").trim();
+  const phone = rawPhone ? normalizePhone(rawPhone) : "";
   const email = (body.email || process.env.DEMO_EMAIL || "").trim();
   const mode = body.mode === "auto" ? "auto" : "test";
 
